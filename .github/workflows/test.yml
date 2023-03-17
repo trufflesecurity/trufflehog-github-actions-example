@@ -2,8 +2,6 @@ name: Test
 
 on:
   push:
-    tags:
-      - v*
     branches:
       - main
   pull_request:
@@ -35,15 +33,12 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           extra_args: --debug --jsonOut
-        run: |
-          set -euo pipefail
-          echo "RESULTS=$(cat ${{ steps.trufflehog.outputs.stdout }} | jq)" >> $GITHUB_OUTPUT
 
       - name: Generate Summary
         id: summary
         if: github.event_name == 'pull_request'
         run: |
-          SUMMARY=$(cat ${{ steps.trufflehog.outputs.RESULTS }})
+          SUMMARY=$(cat ${{ steps.trufflehog.outputs.stdout }} | jq)
           echo "SUMMARY<<EOF" >> $GITHUB_ENV
           echo "$SUMMARY" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
