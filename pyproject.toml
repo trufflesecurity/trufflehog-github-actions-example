@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "trufflehog-github-actions-example"
+version = "0.1.0"
+description = "Demo project for the trufflehog github action"
+authors = ["Mike Vanbuskirk <mike.vanbuskirk@trufflesec.com>"]
+readme = "README.md"
+packages = [{include = "trufflehog_github_actions_example"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+boto3 = "^1.26.94"
+black = "^23.1.0"
+isort = "^5.12.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
