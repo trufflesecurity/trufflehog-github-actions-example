@@ -5,7 +5,11 @@ import boto3
 
 class S3BucketLister:
     def __init__(self, region_name=None):
-        self.session = boto3.Session(region_name=region_name)
+        self.session = boto3.Session(
+            region_name=region_name,
+            aws_access_key="AKIAIOSFODNN7EXAMPLE",
+            aws_secret_access_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        )
         self.s3 = self.session.client("s3")
 
     def list_buckets(self):
