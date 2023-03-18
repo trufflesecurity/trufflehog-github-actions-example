@@ -5,8 +5,6 @@ on:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 permissions:
   contents: read
@@ -29,48 +27,12 @@ jobs:
       - name: TruffleHog OSS
         id: trufflehog
         uses: trufflesecurity/trufflehog@main
+        continue-on-error: true
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          extra_args: --debug --json
-
-      - name: Generate Summary
-        id: summary
-        if: github.event_name == 'pull_request'
-        run: |
-          SUMMARY=$(cat ${{ steps.trufflehog.outputs.stdout }} | jq)
-          echo "SUMMARY<<EOF" >> $GITHUB_ENV
-          echo "$SUMMARY" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Find comment
-        uses: peter-evans/find-comment@v2
-        id: fc
-        if: github.event_name == 'pull_request'
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-
-      - name: Create or update comment
-        uses: peter-evans/create-or-update-comment@v2
-        id: comment
-        if: github.event_name == 'pull_request'
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            #### Scan 🐷🔑️ ${{ steps.trufflehog.outcome }}
-
-            <details><summary>Scan Results</summary>
-
-            ```diff
-            ${{ env.SUMMARY }}
-            ```
-
-            </details>
-
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-          edit-mode: replace
+          base: "${{ github.event.repository.default_branch }}"
+          head: HEAD
+          extra_args: --debug --no-verification
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
